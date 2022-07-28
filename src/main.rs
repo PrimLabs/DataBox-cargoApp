@@ -55,14 +55,6 @@ enum FileExt {
 #[derive(CandidType, Deserialize)]
 enum Result_9 { ok(Vec<FileExt>,Vec<FileExt>,Vec<FileExt>,), err(DataErr) }
 
-// type DataBox = candid::Service;
-// struct SERVICE(candid::Principal);
-// impl SERVICE{
-//   pub async fn getAssetexts(&self) -> CallResult<(Result_9,)> {
-//     ic_cdk::call(self.0, "getAssetexts", ()).await
-//   }
-// }
-
 #[tokio::main]
 async fn main() {
     let matches = App::new("databox command app")
@@ -82,10 +74,10 @@ async fn main() {
                 .value_of("canister_id")
                 .expect("please specify the canister's principal"),
     ).expect("get principal failed");
-    query_allFile(&canister_id).await;
+    query_allPlainFile(&canister_id).await;
 }
 
-async fn query_allFile(canister_id: &Principal) -> () {
+async fn query_allPlainFile(canister_id: &Principal) -> () {
     let url = "https://ic0.app".to_string();
     let transport = ReqwestHttpReplicaV2Transport::create(url).unwrap();
     let agent = Agent::builder()
@@ -105,7 +97,7 @@ async fn query_allFile(canister_id: &Principal) -> () {
             for ans in x {
                 match ans {
                     PlainFileExt(asExt) => {
-                        println!("{}",asExt.file_key);
+                        println!("{}.raw.ic0.app/fk/{}", canister_id.to_text(), asExt.file_key);
                     }
                     EncryptFileExt(bb) => {
                         println!("err");
